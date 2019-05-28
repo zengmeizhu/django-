@@ -1,0 +1,4 @@
+#指定根据商品的哪些字段建立索引
+{{object.title}}
+{{object.detail}}
+{{object.spu.spu_detail}}

@@ -1,0 +1,89 @@
+{% extends 'base_user_center.html' %}
+{% load staticfiles %}
+{% block right_center %}
+		<div class="right_content clearfix">
+				<h3 class="common_title2">全部订单</h3>
+				{% for page_order in page_to %}
+				<ul class="order_list_th w978 clearfix">
+					<li class="col01">{{page_order.create_time}}</li>
+					<li class="col02">订单号:{{page_order.order_id}}</li>
+					<li class="col02 stress">{{page_order.status_name}}</li>
+				</ul>
+
+				<table class="order_list_table w980">
+				{% csrf_token %}
+					<tbody>
+						<tr>
+							<td width="55%">
+								{% for sku in page_order.skus %}
+								<ul class="order_goods_list clearfix">					
+									<li class="col01"><img src="{{sku.sku.image.url}}"></li>
+									<li class="col02">{{sku.sku.title}}<em>{{sku.price}}元/{{sku.sku.unite}}</em></li>
+									<li class="col03">{{sku.count}}</li>
+									<li class="col04">{{sku.amount}}元</li>
+								</ul>
+								{% endfor %}
+							</td>
+							<td width="15%">{{page_order.total_price|add page_order.transit_price}}元</td>
+							<td width="15%">{{page_order.status_name}}</td>
+							<td width="15%"><a href="#" order_id="{{page_order.order}}" order_status="{{page_order.status_name}}" class="oper_btn">去付款</a></td>
+						</tr>
+					</tbody>
+				</table>
+				{% endfor %}
+
+				<div class="pagenation">
+					{% if page_to.has_previous_page %}
+					<a href="{% url 'user:order' page_to.previous_page_number %}"><上一页</a>
+					{% endif %}
+					{% for pindex in ranges %}
+						{% if pindex == page_to.number %}
+							<a href="{% url 'user:order' pindex %}">{{pindex}}</a>
+						{% else %}
+							<a href="{% url 'user:order' pindex %}">{{pindex}}</a>
+						{% endif %}
+					{% endfor %}
+					{% if page_to.has_next_page %}
+					<a href="{% url 'user:order' page_to.next_page_number %}">下一页></a>
+					{% endif %}
+				</div>
+		</div>
+{% endblock right_center %}
+{% block bottom %}
+	<script type="text/javascript" src="{% static 'js/jquery-1.12.2.js' %}"></script>
+	<script type="text/javascript">
+		$('.oper_btn').click(function(){
+			status = $(this).attr('order_status')
+			if(status == 2){
+				//发起ajax post 请求
+				order_id = $(this).attr('order_id')
+				csrf = $('input[name=csrfmiddlewaretoken]'.val()
+				params = {'order_id': order_id, 'csrfmiddlewaretoken': csrf}
+				$.post('/order/pay', params, function(data){
+					if(data.ret == 3){
+						//引导到支付页面
+						window.open(data.pay_url)
+						//浏览器访问/order/check页面，获取支付结果
+						$.post('/order/check', params,  function(data){
+							if(data.ret == 3){
+								alert('支付成功')
+								location reload()
+							}
+							else{
+								alert(data.errmsg)
+							}
+						})
+
+					}
+					else{
+						alert(data.errmsg)
+					}
+				})
+			}
+			else{
+
+			}
+
+		})
+	</script>
+{% endblock bottom %}
