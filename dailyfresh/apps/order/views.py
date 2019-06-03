@@ -230,5 +230,53 @@ class CheckPayView(View):
                 return JsonResponse({'ret': 4, 'errmsg': '支付出错'})
 
 
+class CommentView(View):
+    def get(self, request, order_id):
+        # 接收参数
+        user = request.user
+        # 校验参数
+        if not order_id:
+            return redirect(reverse('user:order'))
+        try:
+            order = OrderInfo.objects.get(id=order_id)
+        except OrderInfo.DoesNotExist:
+            return render(reverse('user:order'))
 
 
+        skus = OrderGoods.objects.filter(order=order).order_by('-create_time')
+        for sku in skus:
+            amount = sku.price * sku.count
+            sku.amount = amount
+        order.status_name = OrderInfo.ORDER_STATUS[order.status]
+        order.skus = skus
+
+        return render(request, 'comment.html', {'order': order})
+    def post(self, request, order_id):
+        
+        #校验参数
+        if not order_id:
+            return redirect(reverse('user:order'))
+        try:
+            order = OrderInfo.objects.get(id=order_id)
+        except OrderInfo.DoesNotExist:
+            return redirect(reverse('user:order'))
+        #获取评论条数
+        total_count = request.POST.get('total_count')
+        total_count = int(total_count)
+        #循环获取订单中的评论内容并保存
+        for i in range(1, total_count+1):
+            sku_id = request.POST.get('sku_%d' % i)
+            sku_comment = request.POST.get('content_%d' % i)
+            sku = GoodsSKU.objects.get(id=sku_id)
+            try:
+                order_goods = OrderGoods.objects.get(sku=sku)
+            except OrderGoods.DoesNotExist:
+                continue
+                
+            order_goods.comment = sku_comment
+            order_goods.save()
+        #修改订单状态
+        order.status = 5
+        order.save()
+
+        return render(reverse('user:order', kwargs={'page': 1}))

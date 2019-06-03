@@ -150,6 +150,14 @@ CACHES = {
 
 }
 
+#发送邮件的配置
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.126.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = 'z15279104901@126.com'
+EMAIL_HOST_PASSWORD = 'zzm0001781795'
+EMAIL_FORM = '天天生鲜<z15279104901@126.com>'
+
 #配置session的存储
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
