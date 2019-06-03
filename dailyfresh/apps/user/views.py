@@ -48,12 +48,12 @@ class RegisterView(View):
         user.is_active = 0
         user.save()
         #发邮件
-        # my_email = '2515705491@qq.com'
-        #ser = Serializer(settings.SECRET_KEY, 3600)
-        #info = {'comfirm': user.id}
-        #token = ser.dumps(info)
-        #token = token.decode()
-        #send_active_mail(email, token, username)
+        my_email = 'z15279104901@126.com'
+        ser = Serializer(settings.SECRET_KEY, 3600)
+        info = {'comfirm': user.id}
+        token = ser.dumps(info)
+        token = token.decode()
+        send_active_mail(email, token, username)
 
         return redirect(reverse('user:login'))
 
@@ -96,8 +96,8 @@ class LoginView(View):
         user = authenticate(username=username, password=password)
         if user is None:
             return render(request, 'login.html', {'errmsg': '用户名或密码错误'})
-        #if user.is_active == 0:
-            #return redirect(reverse('user:register'), {'errmsg': '账户未激活'})
+        if user.is_active == 0:
+            return redirect(reverse('user:register'), {'errmsg': '账户未激活'})
         login(request, user)
         #获取登陆后需要跳转到的地址，如果为空，则其默认为‘goods:index'
         next_url = request.GET.get('next', reverse('goods:index'))
@@ -126,9 +126,9 @@ class UserInfoView(LoginRequiredMixin, View):
         for sku_id in sku_ids:
             goods = GoodsSKU.objects.get(id=sku_id)
             skus.append(goods)
-        context = { 'address': address,
-                    'goods': skus,
-                    'page': 'user'
+        context = {'address': address,
+                   'goods': skus,
+                   'page': 'user'
         }
         return render(request, 'user_center_info.html', context)
 
