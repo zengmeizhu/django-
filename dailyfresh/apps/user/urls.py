@@ -1,7 +1,8 @@
 #-*-coding:utf-8-*-
 from django.contrib import admin
 from django.urls import path
-from user.views import RegisterView, LoginView, ActiveView, LoginoutView, UserInfoView, UserOrderView, UserSiteView, OrderPayView, CheckPayView
+from user.views import RegisterView, LoginView, ActiveView, LoginoutView, UserInfoView, UserOrderView, UserSiteView
+from order.views import OrderPayView, CheckPayView
 
 app_name = 'user'
 urlpatterns = [

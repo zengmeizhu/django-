@@ -52,11 +52,26 @@
 {% block bottom %}
 	<script type="text/javascript" src="{% static 'js/jquery-1.12.2.js' %}"></script>
 	<script type="text/javascript">
+		$('.oper_btn').each(function(){
+			status = $(this).attr('order_status')
+			if(status == 2){
+				$(this).text('去支付')
+			}
+
+			else if(status == 4){
+				$(this).text('待评价')
+			}
+			else if(status == 5){
+				$(this).text('订单完成')
+			}
+		})
+
 		$('.oper_btn').click(function(){
+			order_id = $(this).attr('order_id')
 			status = $(this).attr('order_status')
 			if(status == 2){
 				//发起ajax post 请求
-				order_id = $(this).attr('order_id')
+
 				csrf = $('input[name=csrfmiddlewaretoken]'.val()
 				params = {'order_id': order_id, 'csrfmiddlewaretoken': csrf}
 				$.post('/order/pay', params, function(data){
@@ -80,8 +95,8 @@
 					}
 				})
 			}
-			else{
-
+			else if(status == 4){
+				location.href = '/order/comment/'+order_id
 			}
 
 		})

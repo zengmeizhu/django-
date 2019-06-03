@@ -64,17 +64,17 @@
 
 		<div class="r_wrap fr clearfix">
 			<ul class="detail_tab clearfix">
-				<li class="active">商品介绍</li>
-				<li>评论</li>
+				<li id="tag_detail" class="active">商品介绍</li>
+				<li id="tag_comment">评论</li>
 			</ul>
 
-			<div class="tab_content">
+			<div class="tab_content" id="tab_detail">
 				<dl>
 					<dt>商品详情：</dt>
 					<dd>{{sku.spu.spu_title|safe}}</dd>
 				</dl>
 			</div>
-			<div class="tab_content">
+			<div class="tab_content" id="tab_comment" style="diplay: None">
 				<dl>
 					<dt>评论时间：{{comment.update_time}}&nbsp;&nbsp;用户名：{{comment.order.user}}</dt>
 					<dd>评论内容:{{comment.comment}}</dd>
@@ -89,6 +89,18 @@
 
 	<script type="text/javascript" src="{% static 'js/jquery-1.12.2.js' %}"></script>
 	<script type="text/javascript">
+		$('#tag_detail').click(function(){
+			$('#tag_comment').removeclass('active')
+			$(this).addclass('active')
+			$('#tab_comment).hidden()
+			$('#tab_detail).show()
+		})
+		$('#tag_comment').click(function(){
+			$('#tag_detail').removeclass('active')
+			$(this).addclass('active')
+			$('#tab_comment).show()
+			$('#tab_detail).hidden()
+		})
 		updata_amount()
 		//计算商品的总价
 		function update_amount(){
